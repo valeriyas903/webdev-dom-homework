@@ -1,0 +1,127 @@
+
+  "use strict";
+
+
+    const addBtn = document.getElementById("add-btn");
+    const nameInput = document.getElementById("name-input");
+    const commentInput = document.getElementById("comment-input");
+    const commentsList = document.querySelector(".comments");
+
+    let comments = [
+      {
+        name: "Глеб Фокин",
+        date: "12.02.22 12:18",
+        text: "Это будет первый комментарий на этой странице",
+        likes: 3,
+        isLiked: false,
+      },
+      {
+        name: "Варвара Н.",
+        date: "13.02.22 19:22",
+        text: "Мне нравится как оформлена эта страница! ❤",
+        likes: 75,
+        isLiked: true,
+      },
+    ];
+
+    function escapeHTML(str) {
+      return str
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#39;");
+    }
+
+    function renderComments() {
+      commentsList.innerHTML = comments.map((comment, index) => `
+        <li class="comment" data-index="${index}">
+          <div class="comment-header">
+            <div>${comment.name}</div>
+            <div>${comment.date}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-text">
+              ${comment.text}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${comment.likes}</span>
+              <button class="like-button${comment.isLiked ? " -active-like" : ""}" data-index="${index}"></button>
+            </div>
+          </div>
+        </li>
+      `).join("");
+
+      addReplyListeners();
+      addLikeListeners();
+    }
+    function addLikeListeners() {
+      document.querySelectorAll(".like-button").forEach((btn) => {
+        btn.addEventListener("click", function (event) {
+          event.stopPropagation(); 
+          const idx = Number(this.dataset.index);
+          if (comments[idx].isLiked) {
+            comments[idx].likes--;
+            comments[idx].isLiked = false;
+          } else {
+            comments[idx].likes++;
+            comments[idx].isLiked = true;
+          }
+          renderComments();
+        });
+      });
+    }
+
+    function addReplyListeners() {
+      const commentElements = document.querySelectorAll(".comment");
+      commentElements.forEach((commentEl) => {
+        commentEl.addEventListener("click", function (event) {
+
+          if (event.target.classList.contains("like-button")) {
+            return;
+          }
+          const author = commentEl.querySelector(".comment-header div").textContent;
+          const text = commentEl.querySelector(".comment-text").textContent;
+          commentInput.value = `> ${text}\n${author}, `;
+          commentInput.focus();
+        });
+      });
+    }
+
+
+    addBtn.addEventListener("click", () => {
+      const name = nameInput.value.trim();
+      const comment = commentInput.value.trim();
+
+      if (!name || !comment) {
+        alert("Пожалуйста, заполните все поля!");
+        return;
+      }
+
+      const safeName = escapeHTML(name);
+      const safeComment = escapeHTML(comment);
+
+      const now = new Date();
+      const formattedDate = now.toLocaleDateString('ru-RU').replace(/\//g, '.') + " " +
+        now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+      comments.push({
+        name: safeName,
+        date: formattedDate,
+        text: safeComment,
+        likes: 0,
+        isLiked: false,
+      });
+
+      renderComments();
+
+
+      nameInput.value = "";
+      commentInput.value = "";
+    });
+
+    renderComments();
+
+    console.log("It works!");
