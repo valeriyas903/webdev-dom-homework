@@ -14,5 +14,7 @@ export let comments = [
         isLiked: true,
       },
     ];
-
+export function pushComment(obj) {
+  comments.push(obj);
+}
     

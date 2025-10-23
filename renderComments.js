@@ -28,4 +28,3 @@ export function renderComments() {
     )
     .join("");
 }
-initListeners(renderComments);
