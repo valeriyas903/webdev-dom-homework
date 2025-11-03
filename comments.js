@@ -1,5 +1,6 @@
 import { getComments, addComment } from "./api.js";
 
+import { renderComments } from "./renderComments.js";
 
 export let comments = [];
 
@@ -9,6 +10,7 @@ export async function loadComments() {
     const serverComments = await getComments();
     
     comments = Array.isArray(serverComments) ? serverComments : [];
+     renderComments(); 
   } catch (error) {
     console.error("loadComments:", error);
     comments = [];
@@ -18,12 +20,14 @@ export async function loadComments() {
 
 
 export async function pushComment(obj) {
+  
   try {
 
     await addComment(obj.text, obj.name);
+    await loadComments();
    
   } catch (error) {
-    console.error("pushComment:", error);
+   
     throw error;
   }
 }

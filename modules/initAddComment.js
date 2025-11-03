@@ -1,6 +1,7 @@
 import { pushComment } from "../comments.js";
 import { escapeHTML } from "../escape.js";
 import { renderComments } from "../renderComments.js";
+import { loadComments } from "../comments.js"; 
 
 export function initAddComment() {
   const addBtn = document.getElementById("add-btn");
@@ -28,15 +29,15 @@ export function initAddComment() {
       
       await pushComment({ name: safeName, text: safeComment });
 
-      
   
       nameInput.value = "";
       commentInput.value = "";
+
     } catch (err) {
       alert(err?.message || "Не удалось добавить комментарий");
     } finally {
       addBtn.disabled = false;
     }
-    renderComments();
+    
   });
 }
