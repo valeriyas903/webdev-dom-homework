@@ -1,20 +1,33 @@
-export let comments = [
-      {
-        name: "Глеб Фокин",
-        date: "12.02.22 12:18",
-        text: "Это будет первый комментарий на этой странице",
-        likes: 3,
-        isLiked: false,
-      },
-      {
-        name: "Варвара Н.",
-        date: "13.02.22 19:22",
-        text: "Мне нравится как оформлена эта страница! ❤",
-        likes: 75,
-        isLiked: true,
-      },
-    ];
-export function pushComment(obj) {
-  comments.push(obj);
-}
+import { getComments, addComment } from "./api.js";
+
+import { renderComments } from "./renderComments.js";
+
+export let comments = [];
+
+
+export async function loadComments() {
+  try {
+    const serverComments = await getComments();
     
+    comments = Array.isArray(serverComments) ? serverComments : [];
+     renderComments(); 
+  } catch (error) {
+    console.error("loadComments:", error);
+    comments = [];
+    throw error;
+  }
+}
+
+
+export async function pushComment(obj) {
+  
+  try {
+
+    await addComment(obj.text, obj.name);
+    await loadComments();
+   
+  } catch (error) {
+   
+    throw error;
+  }
+}
