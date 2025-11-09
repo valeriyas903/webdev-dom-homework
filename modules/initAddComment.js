@@ -1,18 +1,19 @@
 import { pushComment } from "../comments.js";
 import { escapeHTML } from "../escape.js";
 import { renderComments } from "../renderComments.js";
-import { loadComments } from "../comments.js"; 
+
 
 export function initAddComment() {
   const addBtn = document.getElementById("add-btn");
   const nameInput = document.getElementById("name-input");
   const commentInput = document.getElementById("comment-input");
+  const addForm = document.querySelector(".add-form");
 
-  if (!addBtn) return;
+  if (!addBtn || !addForm) return;
 
   addBtn.addEventListener("click", async () => {
-   
-    addBtn.disabled = true;
+   let addingEl = null;
+    
     try {
       const name = nameInput.value.trim();
       const comment = commentInput.value.trim();
@@ -26,18 +27,35 @@ export function initAddComment() {
       const safeName = escapeHTML(name);
       const safeComment = escapeHTML(comment);
 
+      addingEl = document.createElement("div");
+      addingEl.className = "adding-comment";
+      addingEl.textContent = "Комментарий добавляется";
       
+      if (addForm.parentNode) {
+        addForm.style.display = "none";
+        addForm.parentNode.insertBefore(addingEl, addForm);
+      } else {
+        
+        addForm.after(addingEl);
+      }
+
+
+      addBtn.disabled = true;
+
       await pushComment({ name: safeName, text: safeComment });
 
   
       nameInput.value = "";
       commentInput.value = "";
-
+      renderComments();
     } catch (err) {
-      alert(err?.message || "Не удалось добавить комментарий");
+      alert(err?.message || "Ошибка при добавлении комментария");
     } finally {
       addBtn.disabled = false;
+      if (addingEl && addingEl.parentNode) {
+        addingEl.remove();
+      }
+      addForm.style.display = "";
     }
-    
   });
 }
