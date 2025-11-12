@@ -12,34 +12,28 @@ export function renderComments() {
     return;
   }
 
-  try {
-    commentsList.innerHTML = comments
-      .map(
-        (comment, index) => `
-        <li class="comment" data-index="${index}">
-          <div class="comment-header">
-            <div>${comment.name || 'Аноним'}</div>
-            <div>${comment.date || ''}</div>
-          </div>
-          <div class="comment-body">
-            <div class="comment-text">
-              ${comment.text || ''}
-            </div>
-          </div>
-          <div class="comment-footer">
-            <div class="likes">
-              <span class="likes-counter">${comment.likes || 0}</span>
-              <button class="like-button${comment.isLiked ? " -active-like" : ""}" 
-                data-index="${index}"
-                type="button"
-              ></button>
-            </div>
-          </div>
-        </li>`
-      )
-      .join("");
-  } catch (error) {
-    console.error("Ошибка при рендеринге:", error);
-    commentsList.innerHTML = '<div class="error">Ошибка отображения</div>';
-  }
+   commentsList.innerHTML = comments
+    .map(
+         (c, index) => `
+    <li class="comment" data-index="${index}">
+      <div class="comment-header">
+        <div>${c.name}</div>
+        <div>${c.date}</div>
+      </div>
+      <div class="comment-body">
+        <div class="comment-text">${c.text}</div>
+      </div>
+      <div class="comment-footer">
+        <div class="likes">
+          <span class="likes-counter">${c.likes}</span>
+          <button class="like-button${c.isLiked ? " -active-like" : ""}${c.isLikeLoading ? " -loading-like" : ""}" 
+            data-index="${index}" 
+            type="button"
+            ${c.isLikeLoading ? "disabled" : ""}
+          ></button>
+        </div>
+      </div>
+    </li>`
+  )
+    .join("");
 }
