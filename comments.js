@@ -12,8 +12,7 @@ export async function loadComments() {
     comments = Array.isArray(serverComments) ? serverComments : [];
      renderComments(); 
   } catch (error) {
-    console.error("loadComments:", error);
-    comments = [];
+   
     throw error;
   }
 }
