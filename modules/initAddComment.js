@@ -12,50 +12,59 @@ export function initAddComment() {
   if (!addBtn || !addForm) return;
 
   addBtn.addEventListener("click", async () => {
-   let addingEl = null;
-    
-    try {
+   
+  
       const name = nameInput.value.trim();
       const comment = commentInput.value.trim();
 
-      if (!name || !comment) {
-        alert("Пожалуйста, заполните все поля!");
-        return;
-      }
-
+     if (name.length < 3 || comment.length < 3) {
+      alert("Имя и комментарий должны быть не короче 3 символов");
+      return; 
+    }
       
       const safeName = escapeHTML(name);
       const safeComment = escapeHTML(comment);
 
+      let addingEl = null;
+
+     try {
       addingEl = document.createElement("div");
       addingEl.className = "adding-comment";
       addingEl.textContent = "Комментарий добавляется";
+
       
-      if (addForm.parentNode) {
-        addForm.style.display = "none";
+      addForm.style.display = "none";
+      addForm.parentNode.insertBefore(addingEl, addForm);
+     if (addForm.parentNode) {
         addForm.parentNode.insertBefore(addingEl, addForm);
-      } else {
-        
-        addForm.after(addingEl);
       }
-
-
       addBtn.disabled = true;
 
+     
       await pushComment({ name: safeName, text: safeComment });
 
-  
+      
+      renderComments();
       nameInput.value = "";
       commentInput.value = "";
-      renderComments();
     } catch (err) {
-      alert(err?.message || "Ошибка при добавлении комментария");
+      
+      if (err.message === "validation") {
+        
+        alert("Имя и комментарий должны быть не короче 3 символов");
+      } else if (err.message === "server") {
+        alert("Сервер сломался, попробуй позже");
+      } else if (err.message === "network") {
+        alert("Кажется, у вас сломался интернет, попробуйте позже");
+        } else {
+        
+        alert(err?.message || "Не удалось добавить комментарий");
+      }
+      
     } finally {
       addBtn.disabled = false;
-      if (addingEl && addingEl.parentNode) {
-        addingEl.remove();
-      }
-      addForm.style.display = "";
+      if (addingEl && addingEl.parentNode) addingEl.remove();
+      addForm.style.display = ""; 
     }
   });
 }
