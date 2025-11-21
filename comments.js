@@ -1,32 +1,43 @@
-import { getComments, addComment } from "./api.js";
-
-import { renderComments } from "./renderComments.js";
+import { getCommentsV2, addCommentV2 } from "./apiV2.js";
+import { getToken } from "./auth.js";
 
 export let comments = [];
 
 
+let isPosting = false;
+
 export async function loadComments() {
   try {
-    const serverComments = await getComments();
-    
-    comments = Array.isArray(serverComments) ? serverComments : [];
-     renderComments(); 
-  } catch (error) {
-   
-    throw error;
+    const serverComments = await getCommentsV2();
+    const seen = new Set();
+    comments = (serverComments || []).filter(c => {
+      if (!c || seen.has(c.id)) return false;
+      seen.add(c.id);
+      return true;
+    });
+    return comments;
+  } catch (err) {
+    throw err;
   }
 }
 
-
 export async function pushComment(obj) {
-  
-  try {
+  if (isPosting) {
+    throw new Error("posting");
+  }
 
-    await addComment(obj.text, obj.name);
+  const token = getToken();
+  if (!token) throw new Error("auth");
+
+  isPosting = true;
+  try {
+    await addCommentV2(obj.text, token);
+   
     await loadComments();
-   
-  } catch (error) {
-   
-    throw error;
+    return comments;
+  } catch (err) {
+    throw err;
+  } finally {
+    isPosting = false;
   }
 }
