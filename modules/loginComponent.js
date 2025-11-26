@@ -19,13 +19,10 @@ const LOGIN_TEMPLATE = `
           <button type="button" id="login-cancel" class="login-button secondary">Отмена</button>
         </div>
         <div class="login-footer">
-          <a href="#" id="to-register" class="login-link">Зарегистрироваться</a>
+          <a href="#" id="to-register" class="login-link">Нет аккаунта? Зарегистрироваться</a>
         </div>
         <div id="login-error" class="login-error"></div>
       </form>
-    </div>
-    <div class="login-hint">
-      Тестовый пользователь: <strong>demo-admin</strong> / <strong>demopass</strong>
     </div>
   </div>
 `;
