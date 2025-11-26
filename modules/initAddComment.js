@@ -2,6 +2,7 @@ import { pushComment } from "../comments.js";
 import { escapeHTML } from "../escape.js";
 import { renderComments } from "../renderComments.js";
 import { isAuthenticated, getUsername } from "../auth.js";
+import { renderLoginPage } from "./loginComponent.js";
 
 export function initAddComment() {
   const addBtn = document.getElementById("add-btn");
@@ -26,7 +27,7 @@ export function initAddComment() {
       container.appendChild(hint);
       document.getElementById("to-login").addEventListener("click", (e) => {
         e.preventDefault();
-        import("../loginComponent.js").then(m => m.renderLoginPage());
+        renderLoginPage();
       });
     }
     return;
